@@ -1,0 +1,475 @@
+﻿<Window x:Class="QRPayment.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QRPayment"
+        xmlns:userControl="clr-namespace:QRPayment.View.UserControl"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="MainWindow" Width="1072" Height="609">
+    <Grid>
+        <TabControl>
+            <TabItem Header="Напрямую">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition ></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <GroupBox Grid.Row="0" Header="Данные подключения">
+                        <Grid>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <GroupBox Header="Логин">
+                                    <TextBox Text="{Binding Login, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                </GroupBox>
+                                <GroupBox Grid.Row="1" Header="Пароль">
+                                    <userControl:BindablePasswordBox Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></userControl:BindablePasswordBox>
+                                </GroupBox>
+                                <GroupBox Grid.Row="2" Header="ID терминала">
+                                    <TextBox Text="{Binding IdTerminal, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                </GroupBox>
+                                <GroupBox Grid.Row="3" Header="Токен">
+                                    <TextBox Text="{Binding Token, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                </GroupBox>
+                            </Grid>
+
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <GroupBox Header="Дата с">
+                                    <DatePicker 
+                            SelectedDate="{Binding
+                                Path=DateTimeFrom,
+                                Mode=TwoWay,
+                                TargetNullValue={x:Static System:DateTime.Now}}"></DatePicker>
+                                </GroupBox>
+                                <GroupBox Grid.Row="1" Header="Дата по">
+                                    <DatePicker 
+                            SelectedDate="{Binding
+                                Path=DateTimeTo,
+                                Mode=TwoWay,
+                                TargetNullValue={x:Static System:DateTime.Now}}"></DatePicker>
+                                </GroupBox>
+
+                            </Grid>
+
+
+
+
+                            <Image Grid.Column="2" Grid.RowSpan="4"  Margin="5"  Width="150" Height="150"
+                       Source="../../Resources/QRT226787970352034.png"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       ToolTip="Редактировать товар"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="*"></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <Grid Column="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <GroupBox Header="Сумма в копейках">
+                                    <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                </GroupBox>
+                                <GroupBox Grid.Row="1" Header="Код валюты">
+                                    <TextBox Text="{Binding Currencycode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                </GroupBox>
+                            </Grid>
+                            <WrapPanel Grid.Row="1">
+                                <Button Command="{Binding CreatePaymentId_Command}" Margin="5">Добавить новый платеж c ID</Button>
+                                <Button Command="{Binding CreatePayment_Command}" Margin="5">Добавить новый платеж</Button>
+                                <Button Command="{Binding ClosePayment_Command}" Margin="5">Отменить последний платёж</Button>
+                                <Button Command="{Binding ReversePayment_Command}" Margin="5">Отменить платёж и вернуть деньги</Button>
+                                <Button Command="{Binding GetPaymentState_Command}" Margin="5">Получить статус операции</Button>
+                                <Button Command="{Binding GetPayments_Command}" Margin="5">Получить перечень операций</Button>
+                            </WrapPanel>
+
+                            <TextBox Grid.Row="2" TextWrapping="Wrap" IsReadOnly="True"
+                         Text="{Binding SelectedPaymentRequest.State}"></TextBox>
+                        </Grid>
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.4*"></RowDefinition>
+                                <RowDefinition Height="*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <ListView Grid.Row="0" ItemsSource="{Binding PaymentRequests.PaymentRequestList, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedItem="{Binding SelectedPaymentRequest, Mode=TwoWay}"
+                          IsSynchronizedWithCurrentItem="True" >
+                                <ListView.View>
+                                    <GridView>
+                                        <GridView.Columns>
+                                            <GridViewColumn>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding ID}">
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                                <GridViewColumn.Header>
+                                                    <TextBlock Text="ID"></TextBlock>
+                                                </GridViewColumn.Header>
+                                            </GridViewColumn>
+                                            <GridViewColumn >
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Amount}">
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                                <GridViewColumn.Header>
+                                                    <TextBlock Text="Сумма"></TextBlock>
+                                                </GridViewColumn.Header>
+                                            </GridViewColumn>
+                                            <GridViewColumn>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding CurrencyCode}">
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                                <GridViewColumn.Header>
+                                                    <TextBlock Text="Код валюты"></TextBlock>
+                                                </GridViewColumn.Header>
+                                            </GridViewColumn>
+                                            <GridViewColumn>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding State}">
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                                <GridViewColumn.Header>
+                                                    <TextBlock Text="Состояние"></TextBlock>
+                                                </GridViewColumn.Header>
+                                            </GridViewColumn>
+                                            <GridViewColumn>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding ReferenceNumber}">
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                                <GridViewColumn.Header>
+                                                    <TextBlock Text="RRN"></TextBlock>
+                                                </GridViewColumn.Header>
+                                            </GridViewColumn>
+                                        </GridView.Columns>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                            <GroupBox Grid.Row="1" Header="Xml ответ">
+                                <TextBox  TextWrapping="Wrap" IsReadOnly="True"
+                              Text="{Binding PaymentsXml}"></TextBox>
+                            </GroupBox>
+
+                        </Grid>
+
+
+
+
+
+                    </Grid>
+
+
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Web Socket" IsSelected="True">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"></RowDefinition>
+                        <RowDefinition ></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <GroupBox Grid.Row="0" Header="Данные подключения">
+                        <Grid>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                                <ColumnDefinition></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <GroupBox Header="Логин">
+                                    <TextBox Text="{Binding Login, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                </GroupBox>
+                                <GroupBox Grid.Row="1" Header="Пароль">
+                                    <userControl:BindablePasswordBox Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></userControl:BindablePasswordBox>
+                                </GroupBox>
+                                <GroupBox Grid.Row="2" Header="ID терминала">
+                                    <TextBox Text="{Binding IdTerminal, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                </GroupBox>
+                                <GroupBox Grid.Row="3" Header="Токен">
+                                    <TextBox Text="{Binding Token, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                </GroupBox>
+                            </Grid>
+
+                            <Grid Grid.Column="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+                                    <RowDefinition Height="Auto"></RowDefinition>
+
+                                </Grid.RowDefinitions>
+                                <GroupBox Header="Дата с">
+                                    <DatePicker 
+                                        SelectedDate="{Binding
+                                            Path=DateTimeFrom,
+                                            Mode=TwoWay,
+                                            TargetNullValue={x:Static System:DateTime.Now}}">
+                                    </DatePicker>
+                                </GroupBox>
+                                <GroupBox Grid.Row="1" Header="Дата по">
+                                    <DatePicker 
+                                        SelectedDate="{Binding
+                                            Path=DateTimeTo,
+                                            Mode=TwoWay,
+                                            TargetNullValue={x:Static System:DateTime.Now}}">
+                                    </DatePicker>
+                                </GroupBox>
+
+                                <Button Grid.Row="2" Command="{Binding CloseServer_Command}">Закрыть сервер</Button>
+
+
+                            </Grid>
+
+
+
+
+                            <Image Grid.Column="2" Grid.RowSpan="4" Margin="5"  Width="150" Height="150"
+                       Source="../../Resources/QRT226787970352034.png"
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       ToolTip="Редактировать товар"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="*"></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <Grid Column="0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                    <RowDefinition></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <GroupBox Header="Сумма в копейках">
+                                    <TextBox Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                </GroupBox>
+                                <GroupBox Grid.Row="1" Header="Код валюты">
+                                    <TextBox Text="{Binding Currencycode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"></TextBox>
+                                </GroupBox>
+                            </Grid>
+                            <WrapPanel Grid.Row="1">
+                                <Button Command="{Binding CreatePaymentIdWebSocket_Command}" Margin="5">Добавить новый платеж c ID</Button>
+                                <Button Command="{Binding CreatePaymentIdWebSocketAndWaitStatus_Command}" Margin="5">Добавить новый платеж и ждать ответ</Button>
+                                <Button Command="{Binding CreatePaymentWebSocket_Command}" Margin="5">Добавить новый платеж</Button>
+                                <Button Command="{Binding ReversePaymentWebSocket_Command}" Margin="5">Отменить платёж и вернуть деньги</Button>
+                                <Button Command="{Binding GetPaymentStateWebSocket_Command}" Margin="5">Получить статус операции</Button>
+                                <Button Command="{Binding GetPaymentsWebSocket_Command}" Margin="5">Получить оперции</Button>
+                            </WrapPanel>
+
+                            <ListView Grid.Row="2" ItemsSource="{Binding PaymentRequests.PaymentRequestList, UpdateSourceTrigger=PropertyChanged}"
+                          SelectedItem="{Binding SelectedPaymentRequest, Mode=TwoWay}"
+                          IsSynchronizedWithCurrentItem="True" >
+                                <ListView.View>
+                                    <GridView>
+                                        <GridView.Columns>
+                                            <GridViewColumn>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding ID}">
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                                <GridViewColumn.Header>
+                                                    <TextBlock Text="ID"></TextBlock>
+                                                </GridViewColumn.Header>
+                                            </GridViewColumn>
+                                            <GridViewColumn >
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding Amount}">
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                                <GridViewColumn.Header>
+                                                    <TextBlock Text="Сумма"></TextBlock>
+                                                </GridViewColumn.Header>
+                                            </GridViewColumn>
+                                            <GridViewColumn>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding CurrencyCode}">
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                                <GridViewColumn.Header>
+                                                    <TextBlock Text="Код валюты"></TextBlock>
+                                                </GridViewColumn.Header>
+                                            </GridViewColumn>
+                                            <GridViewColumn>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding State}">
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                                <GridViewColumn.Header>
+                                                    <TextBlock Text="Состояние"></TextBlock>
+                                                </GridViewColumn.Header>
+                                            </GridViewColumn>
+                                            <GridViewColumn>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding ReferenceNumber}">
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                                <GridViewColumn.Header>
+                                                    <TextBlock Text="RRN"></TextBlock>
+                                                </GridViewColumn.Header>
+                                            </GridViewColumn>
+                                            <GridViewColumn>
+                                                <GridViewColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding DataCreate}">
+                                                        </TextBlock>
+                                                    </DataTemplate>
+                                                </GridViewColumn.CellTemplate>
+                                                <GridViewColumn.Header>
+                                                    <TextBlock Text="Дата создания"></TextBlock>
+                                                </GridViewColumn.Header>
+                                            </GridViewColumn>
+                                        </GridView.Columns>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                                <RowDefinition Height="*"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <GroupBox Grid.Row="0" Header="Текущий платёж">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                            <RowDefinition Height="Auto"></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition></ColumnDefinition>
+                                            <ColumnDefinition></ColumnDefinition>
+                                            <ColumnDefinition></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <GroupBox Grid.Row="0" Grid.Column="0" Header="Сумма">
+                                            <TextBox  TextWrapping="Wrap" IsReadOnly="True"
+                                                      Text="{Binding CurrentPaymentRequest.Amount}"></TextBox>
+                                        </GroupBox>
+                                        <GroupBox Grid.Row="0" Grid.Column="1" Header="Валюта">
+                                            <TextBox  TextWrapping="Wrap" IsReadOnly="True"
+                                                      Text="{Binding CurrentPaymentRequest.CurrencyCode}"></TextBox>
+                                        </GroupBox>
+
+                                        <GroupBox Grid.Row="1" Grid.Column="0" Header="id платежа">
+                                            <TextBox  TextWrapping="Wrap" IsReadOnly="True"
+                                                      Text="{Binding CurrentPaymentRequest.ID}"></TextBox>
+                                        </GroupBox>
+                                        <GroupBox Grid.Row="1" Grid.Column="1" Header="RRN">
+                                            <TextBox  TextWrapping="Wrap" IsReadOnly="True"
+                                                      Text="{Binding CurrentPaymentRequest.ReferenceNumber}"></TextBox>
+                                        </GroupBox>
+                                        <GroupBox Grid.Row="1" Grid.Column="2" Header="Статус">
+                                            <TextBox  TextWrapping="Wrap" IsReadOnly="True"
+                                                      Text="{Binding CurrentPaymentRequest.State}"></TextBox>
+                                        </GroupBox>
+                                    </Grid>
+                                    <WrapPanel Grid.Row="1" Grid.Column="0">
+                                        <Button Margin="5" Padding="5" 
+                                                Command="{Binding GetCurrentPaymentStateWebSocket_Command}">
+                                            Получить статус платежа
+                                        </Button>
+                                        <Button Margin="5" Padding="5" 
+                                                Command="{Binding CloseCurrentPaymentWebSocket_Command}">
+                                            Отменить платёж
+                                        </Button>
+                                    </WrapPanel>
+
+                                </Grid>
+
+                            </GroupBox>
+                            <GroupBox Grid.Row="1" Header="Xml ответ">
+                                <TextBox  TextWrapping="Wrap" IsReadOnly="True"
+                              Text="{Binding PaymentsXml}"></TextBox>
+                            </GroupBox>
+
+                        </Grid>
+
+
+
+
+
+                    </Grid>
+
+
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+
+    </Grid>
+
+</Window>
